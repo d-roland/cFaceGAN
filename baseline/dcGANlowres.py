@@ -33,8 +33,8 @@ import imageio
 class DCGAN():
     def __init__(self):
         # Input shape
-        self.img_rows = 64
-        self.img_cols = 64
+        self.img_rows = 32
+        self.img_cols = 32
         self.channels = 3
         # self.img_rows = 28
         # self.img_cols = 28
@@ -43,7 +43,7 @@ class DCGAN():
         self.latent_dim = 100
 
         optimizer = Adam(0.0002, 0.5)
-        optimizer2 = optimizer#Adam(.001)
+        optimizer2 = Adam(.0001, 0.5)
 
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
@@ -73,36 +73,36 @@ class DCGAN():
 
         model = Sequential()
 
-        # # original
-        # model.add(Dense(128 * 16 * 16, activation="relu", input_dim=self.latent_dim))
-        # model.add(Reshape((16, 16, 128)))
-        # model.add(UpSampling2D())
-        # model.add(Conv2D(128, kernel_size=3, padding="same"))
-        # model.add(BatchNormalization(momentum=0.8))
-        # model.add(Activation("relu"))
-        # model.add(UpSampling2D())
-        # model.add(Conv2D(64, kernel_size=3, padding="same"))
-        # model.add(BatchNormalization(momentum=0.8))
-        # model.add(Activation("relu"))
-        # model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
-        # model.add(Activation("tanh"))
-
-        # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
-        model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
-        model.add(BatchNormalization(momentum=0.8))
-        model.add(Activation('relu'))
-        model.add(Reshape((4, 4, 1024)))
-        model.add(Conv2DTranspose(512, kernel_size=5, strides=(2,2), padding='same'))
+        # original
+        model.add(Dense(128 * 8 * 8, activation="relu", input_dim=self.latent_dim))
+        model.add(Reshape((8, 8, 128)))
+        model.add(UpSampling2D())
+        model.add(Conv2D(128, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(Conv2DTranspose(256, kernel_size=5, strides=(2,2), padding='same'))
+        model.add(UpSampling2D())
+        model.add(Conv2D(64, kernel_size=3, padding="same"))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(Conv2DTranspose(128, kernel_size=5, strides=(2,2), padding='same'))
-        model.add(BatchNormalization(momentum=0.8))
-        model.add(Activation("relu"))
-        model.add(Conv2DTranspose(3, kernel_size=5, strides=(2,2), padding='same'))
+        model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
         model.add(Activation("tanh"))
+
+        # # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
+        # model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation('relu'))
+        # model.add(Reshape((4, 4, 1024)))
+        # model.add(Conv2DTranspose(512, kernel_size=5, strides=(2,2), padding='same'))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # # model.add(Conv2DTranspose(256, kernel_size=5, strides=(2,2), padding='same'))
+        # # model.add(BatchNormalization(momentum=0.8))
+        # # model.add(Activation("relu"))
+        # model.add(Conv2DTranspose(128, kernel_size=5, strides=(2,2), padding='same'))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(Conv2DTranspose(3, kernel_size=5, strides=(2,2), padding='same'))
+        # model.add(Activation("tanh"))
 
         # # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
         # model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
@@ -194,6 +194,7 @@ class DCGAN():
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
         fake = np.zeros((batch_size, 1))
+        num_generator_cycles = 1
 
         for epoch in range(epochs):
 
@@ -221,7 +222,12 @@ class DCGAN():
             # ---------------------
 
             # Train the generator (wants discriminator to mistake images as real)
-            num_generator_cycles=5
+            if(d_loss[1]>.9 and num_generator_cycles < 99):
+                num_generator_cycles += 1
+                print("generator cycles: "+str(num_generator_cycles))
+            if(d_loss[1]<.5 and num_generator_cycles > 2):
+                num_generator_cycles -= 1
+                print("generator cycles: " + str(num_generator_cycles))
             for generator_cycle in range(num_generator_cycles):
                 g_loss = self.combined.train_on_batch(noise, valid)
                 noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
@@ -263,7 +269,7 @@ class DCGAN():
         # fig.savefig("C:/out/actual%d.png" % epoch)
         # plt.close()
 
-    def crop_resize(self, image_path, resize_shape=(64,64)):
+    def crop_resize(self, image_path, resize_shape=(32,32)):
         image = imageio.imread(image_path)
         height, width, channel = image.shape
 
@@ -282,4 +288,4 @@ class DCGAN():
 
 if __name__ == '__main__':
     dcgan = DCGAN()
-    dcgan.train(epochs=4000, batch_size=32, save_interval=20)
+    dcgan.train(epochs=4000, batch_size=32, save_interval=10)
