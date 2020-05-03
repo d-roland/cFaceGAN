@@ -14,9 +14,10 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
 from tensorflow.keras.layers import BatchNormalization, Activation, ZeroPadding2D
 from tensorflow.keras.layers import LeakyReLU
-from tensorflow.keras.layers import UpSampling2D, Conv2D
+from tensorflow.keras.layers import UpSampling2D, Conv2D, Conv2DTranspose
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam, RMSprop
+from tensorflow.keras.initializers import VarianceScaling
 
 import matplotlib.pyplot as plt
 
@@ -39,9 +40,10 @@ class DCGAN():
         # self.img_cols = 28
         # self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
-        self.latent_dim = 100
+        self.latent_dim = 300
 
         optimizer = Adam(0.0002, 0.5)
+        optimizer2 = Adam()#RMSprop(decay=2e-5)
 
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
@@ -65,24 +67,63 @@ class DCGAN():
         # The combined model  (stacked generator and discriminator)
         # Trains the generator to fool the discriminator
         self.combined = Model(z, valid)
-        self.combined.compile(loss='binary_crossentropy', optimizer=optimizer)
+        self.combined.compile(loss='binary_crossentropy', optimizer=optimizer2)
 
     def build_generator(self):
 
         model = Sequential()
 
-        model.add(Dense(128 * 16 * 16, activation="relu", input_dim=self.latent_dim))
-        model.add(Reshape((16, 16, 128)))
-        model.add(UpSampling2D())
-        model.add(Conv2D(128, kernel_size=3, padding="same"))
+        # # original
+        # model.add(Dense(128 * 16 * 16, activation="relu", input_dim=self.latent_dim))
+        # model.add(Reshape((16, 16, 128)))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(128, kernel_size=3, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(64, kernel_size=3, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
+        # model.add(Activation("tanh"))
+
+        # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
+        model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(Activation('relu'))
+        model.add(Reshape((4, 4, 1024)))
+        model.add(Conv2DTranspose(512, kernel_size=5, strides=(2,2), padding='same'))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(UpSampling2D())
-        model.add(Conv2D(64, kernel_size=3, padding="same"))
+        model.add(Conv2DTranspose(256, kernel_size=5, strides=(2,2), padding='same'))
         model.add(BatchNormalization(momentum=0.8))
         model.add(Activation("relu"))
-        model.add(Conv2D(self.channels, kernel_size=3, padding="same"))
+        model.add(Conv2DTranspose(128, kernel_size=5, strides=(2,2), padding='same'))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(Activation("relu"))
+        model.add(Conv2DTranspose(3, kernel_size=5, strides=(2,2), padding='same'))
         model.add(Activation("tanh"))
+
+        # # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
+        # model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation('relu'))
+        # model.add(Reshape((4, 4, 1024)))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(512, kernel_size=5, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(256, kernel_size=5, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(128, kernel_size=5, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(3, kernel_size=5, padding="same"))
+        # model.add(Activation("tanh"))
 
         model.summary()
 
@@ -95,6 +136,7 @@ class DCGAN():
 
         model = Sequential()
 
+        # original
         model.add(Conv2D(32, kernel_size=3, strides=2, input_shape=self.img_shape, padding="same"))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.25))
@@ -113,6 +155,22 @@ class DCGAN():
         model.add(Dropout(0.25))
         model.add(Flatten())
         model.add(Dense(1, activation='sigmoid'))
+
+        # # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
+        # # this one performs quite badly
+        # model.add(Conv2D(128, kernel_size=5, strides=2, input_shape=self.img_shape, padding="same"))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Conv2D(256, kernel_size=5, strides=2, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Conv2D(512, kernel_size=5, strides=2, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Conv2D(1024, kernel_size=5, strides=2, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Flatten())
+        # model.add(Dense(1, activation='sigmoid'))
 
         model.summary()
 
@@ -163,7 +221,7 @@ class DCGAN():
             # ---------------------
 
             # Train the generator (wants discriminator to mistake images as real)
-            num_generator_cycles=100
+            num_generator_cycles=5
             for generator_cycle in range(num_generator_cycles):
                 g_loss = self.combined.train_on_batch(noise, valid)
                 noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
@@ -224,4 +282,4 @@ class DCGAN():
 
 if __name__ == '__main__':
     dcgan = DCGAN()
-    dcgan.train(epochs=4000, batch_size=32, save_interval=5)
+    dcgan.train(epochs=4000, batch_size=64, save_interval=20)
