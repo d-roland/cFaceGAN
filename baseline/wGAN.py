@@ -88,6 +88,24 @@ class WGAN():
         model.add(Conv2D(self.channels, kernel_size=4, padding="same"))
         model.add(Activation("tanh"))
 
+        # # deeper original
+        # model.add(Dense(256 * 8 * 8, activation="relu", input_dim=self.latent_dim))
+        # model.add(Reshape((8, 8, 256)))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(256, kernel_size=5, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(128, kernel_size=5, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(UpSampling2D())
+        # model.add(Conv2D(64, kernel_size=4, padding="same"))
+        # model.add(BatchNormalization(momentum=0.8))
+        # model.add(Activation("relu"))
+        # model.add(Conv2D(self.channels, kernel_size=4, padding="same"))
+        # model.add(Activation("tanh"))
+
         # # from https://github.com/jazzsaxmafia/dcgan_tensorflow/tree/master/face
         # # not good
         # model.add(Dense(1024 * 4 * 4, input_dim=self.latent_dim))
