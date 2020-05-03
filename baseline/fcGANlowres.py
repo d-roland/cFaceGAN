@@ -99,12 +99,23 @@ class GAN():
 
         model = Sequential()
 
+        # # original
+        # model.add(Flatten(input_shape=self.img_shape))
+        # model.add(Dense(512))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Dense(256))
+        # model.add(LeakyReLU(alpha=0.2))
+        # model.add(Dense(1, activation='sigmoid'))
+
         model.add(Flatten(input_shape=self.img_shape))
-        model.add(Dense(512))
+        model.add(Dense(4096))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dense(1024))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dense(256))
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dense(1, activation='sigmoid'))
+
         model.summary()
 
         img = Input(shape=self.img_shape)
