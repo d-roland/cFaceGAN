@@ -1,3 +1,5 @@
+# https://www.kaggle.com/fkdplc/celeba-dcgan-for-generating-faces
+
 import numpy as np
 import pandas as pd
 import os
