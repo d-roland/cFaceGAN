@@ -6,6 +6,7 @@ Steps to run:
 4. set config.py
     * data_dir = 'C:/celeba-dataset/proGANin'
     * result_dir = 'C:/celeba-dataset/proGANout'
+    * you may want to minimize train.total_kimg, =6009 should work well
 5. run train.py
 
 
