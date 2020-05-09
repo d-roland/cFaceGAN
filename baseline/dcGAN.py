@@ -251,6 +251,8 @@ class DCGAN():
                 cnt += 1
         fig.savefig("C:/out/%d.png" % epoch)
         plt.close()
+
+
         #
         # imgs_back = 0.5 * imgs + 0.5
         # fig, axs = plt.subplots(r, c)
