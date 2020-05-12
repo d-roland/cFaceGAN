@@ -444,7 +444,13 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
     print(len(image_filenames))
     if len(image_filenames) != expected_images:
         error('Expected to find %d images' % expected_images)
-    
+
+    labels = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
+    assert labels.shape == (202599,) and labels.dtype == np.uint8
+    assert np.min(labels) == 0 and np.max(labels) == 1
+    onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
+    onehot[np.arange(labels.size), labels] = 1.0
+
     with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
         order = tfr.choose_shuffled_order()
         for idx in range(order.size):
@@ -453,6 +459,7 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
             img = img[cy - 64 : cy + 64, cx - 64 : cx + 64]
             img = img.transpose(2, 0, 1) # HWC => CHW
             tfr.add_image(img)
+        tfr.add_labels(onehot[order])
 
 #----------------------------------------------------------------------------
 

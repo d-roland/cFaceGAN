@@ -94,7 +94,7 @@ desc += '-celeba';              dataset = EasyDict(tfrecord_dir='celeba'); train
 
 # Conditioning & snapshot options.
 #desc += '-cond'; dataset.max_label_size = 'full' # conditioned on full label
-#desc += '-cond1'; dataset.max_label_size = 1 # conditioned on first component of the label
+desc += '-cond1'; dataset.max_label_size = 1 # conditioned on first component of the label
 #desc += '-g4k'; grid.size = '4k'
 #desc += '-grpc'; grid.layout = 'row_per_class'
 
