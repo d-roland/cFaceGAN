@@ -46,6 +46,29 @@ def generate_fake_images(run_id, snapshot=None, grid_size=[1,1], num_pngs=1, ima
     open(os.path.join(result_subdir, '_done.txt'), 'wt').close()
 
 #----------------------------------------------------------------------------
+# Generate random images or image grids using a previously trained network with input labels.
+
+def generate_fake_images_labels(run_id, snapshot=None, grid_size=[1,1], num_pngs=1, image_shrink=1, png_prefix=None, random_seed=1000, minibatch_size=8):
+    network_pkl = misc.locate_network_pkl(run_id, snapshot)
+    if png_prefix is None:
+        png_prefix = misc.get_id_string_for_network_pkl(network_pkl) + '-'
+    random_state = np.random.RandomState(random_seed)
+
+    print('Loading network from "%s"...' % network_pkl)
+    G, D, Gs = misc.load_network_pkl(run_id, snapshot)
+
+    result_subdir = misc.create_result_subdir(config.result_dir, config.desc)
+    for png_idx in range(num_pngs):
+        print('Generating png %d / %d...' % (png_idx, num_pngs))
+        latents = misc.random_latents(np.prod(grid_size), Gs, random_state=random_state)
+        labels = np.zeros([latents.shape[0], 2], np.float32)
+        labels[:,0] = 1.0
+        images = Gs.run(latents, labels, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_mul=127.5, out_add=127.5, out_shrink=image_shrink, out_dtype=np.uint8)
+        misc.save_image_grid(images, os.path.join(result_subdir, '%s%06d.png' % (png_prefix, png_idx)), [0,255], grid_size)
+    open(os.path.join(result_subdir, '_done.txt'), 'wt').close()
+
+
+#----------------------------------------------------------------------------
 # Generate MP4 video of random interpolations using a previously trained network.
 # To run, uncomment the appropriate line in config.py and launch train.py.
 

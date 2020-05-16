@@ -9,7 +9,12 @@ Steps to run:
     * you may want to minimize train.total_kimg, =6009 should work well
 5. run train.py
 
-
+20200516 Steps to run conditional gan:
+1. run label_generator.py
+2. python dataset_tool.py create_celeba "C:/celeba-dataset/proGANin" "C:/celeba-dataset"
+    * this creates the ".labels" file, make sure you don't have any other .labels files in the output directory
+    * note, you already need to have *.tfrecords generated as creation of these has been commented out
+3. run train.py
 
 ## Progressive Growing of GANs for Improved Quality, Stability, and Variation<br><i>� Official TensorFlow implementation of the ICLR 2018 paper</i>
 

@@ -90,7 +90,7 @@ class TFRecordExporter:
     def add_labels(self, labels):
         if self.print_progress:
             print('%-40s\r' % 'Saving labels...', end='', flush=True)
-        assert labels.shape[0] == self.cur_images
+        # assert labels.shape[0] == self.cur_images
         with open(self.tfr_prefix + '-rxx.labels', 'wb') as f:
             np.save(f, labels.astype(np.float32))
             
@@ -445,20 +445,32 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
     if len(image_filenames) != expected_images:
         error('Expected to find %d images' % expected_images)
 
-    labels = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
-    assert labels.shape == (202599,) and labels.dtype == np.uint8
-    assert np.min(labels) == 0 and np.max(labels) == 1
-    onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
-    onehot[np.arange(labels.size), labels] = 1.0
+    # # one attribute
+    # labels = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
+    # assert labels.shape == (202599,) and labels.dtype == np.uint8
+    # assert np.min(labels) == 0 and np.max(labels) == 1
+    # onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
+    # onehot[np.arange(labels.size), labels] = 1.0
+
+    # two attributes
+    attr21 = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
+    attr32 = np.fromfile(os.path.join(celeba_dir, 'attr32'), dtype=np.uint8)
+    assert attr21.shape == (202599,) and attr21.dtype == np.uint8
+    assert np.min(attr21) == 0 and np.max(attr21) == 1
+    assert attr32.shape == (202599,) and attr32.dtype == np.uint8
+    assert np.min(attr32) == 0 and np.max(attr32) == 1
+    onehot = np.zeros((202599,2), dtype=np.float32) # NOTE: this is not one-hot
+    onehot[:,0] = attr21
+    onehot[:,1] = attr32
 
     with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
         order = tfr.choose_shuffled_order()
-        for idx in range(order.size):
-            img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
-            assert img.shape == (218, 178, 3)
-            img = img[cy - 64 : cy + 64, cx - 64 : cx + 64]
-            img = img.transpose(2, 0, 1) # HWC => CHW
-            tfr.add_image(img)
+        # for idx in range(order.size):
+        #     img = np.asarray(PIL.Image.open(image_filenames[order[idx]]))
+        #     assert img.shape == (218, 178, 3)
+        #     img = img[cy - 64 : cy + 64, cx - 64 : cx + 64]
+        #     img = img.transpose(2, 0, 1) # HWC => CHW
+        #     tfr.add_image(img)
         tfr.add_labels(onehot[order])
 
 #----------------------------------------------------------------------------
