@@ -453,15 +453,31 @@ def create_celeba(tfrecord_dir, celeba_dir, cx=89, cy=121):
     # onehot[np.arange(labels.size), labels] = 1.0
 
     # two attributes
-    attr21 = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
-    attr32 = np.fromfile(os.path.join(celeba_dir, 'attr32'), dtype=np.uint8)
-    assert attr21.shape == (202599,) and attr21.dtype == np.uint8
-    assert np.min(attr21) == 0 and np.max(attr21) == 1
-    assert attr32.shape == (202599,) and attr32.dtype == np.uint8
-    assert np.min(attr32) == 0 and np.max(attr32) == 1
-    onehot = np.zeros((202599,2), dtype=np.float32) # NOTE: this is not one-hot
-    onehot[:,0] = attr21
-    onehot[:,1] = attr32
+    # attr21 = np.fromfile(os.path.join(celeba_dir, 'attr21'), dtype=np.uint8)
+    # attr32 = np.fromfile(os.path.join(celeba_dir, 'attr32'), dtype=np.uint8)
+    # attr3 = np.fromfile(os.path.join(celeba_dir, 'attr3'), dtype=np.uint8)
+    # attr19 = np.fromfile(os.path.join(celeba_dir, 'attr19'), dtype=np.uint8)
+    # assert attr21.shape == (202599,) and attr21.dtype == np.uint8
+    # assert np.min(attr21) == 0 and np.max(attr21) == 1
+    # assert attr32.shape == (202599,) and attr32.dtype == np.uint8
+    # assert np.min(attr32) == 0 and np.max(attr32) == 1
+    # assert attr3.shape == (202599,) and attr3.dtype == np.uint8
+    # assert np.min(attr3) == 0 and np.max(attr32) == 1
+    # assert attr19.shape == (202599,) and attr19.dtype == np.uint8
+    # assert np.min(attr19) == 0 and np.max(attr19) == 1
+    # onehot = np.zeros((202599,4), dtype=np.float32) # NOTE: this is not one-hot
+    # onehot[:,0] = attr21
+    # onehot[:,1] = attr32
+    # onehot[:,2] = attr3
+    # onehot[:,3] = attr19
+
+    # 40 attributes
+    onehot = np.zeros((202599, 40), dtype=np.float32)  # NOTE: this is not one-hot
+    for attr_index in range(40):
+        attr = np.fromfile(os.path.join(celeba_dir, 'attr'+str(attr_index)), dtype=np.uint8)
+        assert attr.shape == (202599,) and attr.dtype == np.uint8
+        assert np.min(attr) == 0 and np.max(attr) == 1
+        onehot[:,attr_index]=attr
 
     with TFRecordExporter(tfrecord_dir, len(image_filenames)) as tfr:
         order = tfr.choose_shuffled_order()

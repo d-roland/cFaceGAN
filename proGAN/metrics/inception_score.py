@@ -25,7 +25,9 @@ import tarfile
 
 import numpy as np
 from six.moves import urllib
-import tensorflow as tf
+#import tensorflow as tf
+import tensorflow.compat.v1 as tf # https://www.tensorflow.org/guide/migrate
+tf.disable_v2_behavior()
 import glob
 import scipy.misc
 import math
@@ -109,7 +111,11 @@ def _init_inception():
             except ValueError:
                 o._shape_val = tf.TensorShape(new_shape) # EDIT: added for compatibility with tensorflow 1.6.0
     w = sess.graph.get_operation_by_name("softmax/logits/MatMul").inputs[1]
-    logits = tf.matmul(tf.squeeze(pool3), w)
+    squeezed = tf.squeeze(pool3, [1,2])
+    if(len(squeezed.shape) == 1 and squeezed.shape[0] == w.shape[0]):
+        squeezed = tf.reshape(squeezed, (1, squeezed.shape[0]))
+    logits = tf.matmul(squeezed, w)
+    # logits = tf.matmul(tf.squeeze(pool3), w)
     softmax = tf.nn.softmax(logits)
 
 #if softmax is None: # EDIT: commented out

@@ -35,8 +35,14 @@ def G_wgan_acgan(G, D, opt, training_set, minibatch_size,
     if D.output_shapes[1][1] > 0:
         with tf.name_scope('LabelPenalty'):
             #label_penalty_fakes = tf.nn.softmax_cross_entropy_with_logits_v2(labels=labels, logits=fake_labels_out)
-            label_penalty_fakes = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=fake_labels_out[:,0]) \
-                                + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=fake_labels_out[:,1])
+            # label_penalty_fakes = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=fake_labels_out[:,0]) \
+            #                     + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=fake_labels_out[:,1]) \
+            #                     + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,2], logits=fake_labels_out[:,2]) \
+            #                     + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,3], logits=fake_labels_out[:,3])
+            label_penalty_fakes = 0
+            for label_index in range(40):
+                label_penalty_fakes += tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:, label_index], logits=fake_labels_out[:, label_index])
+
         loss += label_penalty_fakes * cond_weight
     return loss
 
@@ -77,10 +83,21 @@ def D_wgangp_acgan(G, D, opt, training_set, minibatch_size, reals, labels,
         with tf.name_scope('LabelPenalty'):
             # label_penalty_reals = tf.nn.softmax_cross_entropy_with_logits_v2(labels=labels, logits=real_labels_out)
             # label_penalty_fakes = tf.nn.softmax_cross_entropy_with_logits_v2(labels=labels, logits=fake_labels_out)
-            label_penalty_reals = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=real_labels_out[:,0]) \
-                                  + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=real_labels_out[:,1])
-            label_penalty_fakes = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=fake_labels_out[:,0]) \
-                                  + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=fake_labels_out[:,1])
+            label_penalty_reals = 0
+            label_penalty_fakes = 0
+            for label_index in range(40):
+                label_penalty_reals += tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,label_index], logits=real_labels_out[:,label_index])
+                label_penalty_fakes += tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:, label_index], logits=fake_labels_out[:, label_index])
+
+            # label_penalty_reals = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=real_labels_out[:,0]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=real_labels_out[:,1]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,2], logits=real_labels_out[:,2]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,3], logits=real_labels_out[:,3])
+            #
+            # label_penalty_fakes = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,0], logits=fake_labels_out[:,0]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,1], logits=fake_labels_out[:,1]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,2], logits=fake_labels_out[:,2]) \
+            #                       + tf.nn.sigmoid_cross_entropy_with_logits(labels=labels[:,3], logits=fake_labels_out[:,3])
             label_penalty_reals = tfutil.autosummary('Loss/label_penalty_reals', label_penalty_reals)
             label_penalty_fakes = tfutil.autosummary('Loss/label_penalty_fakes', label_penalty_fakes)
         loss += (label_penalty_reals + label_penalty_fakes) * cond_weight

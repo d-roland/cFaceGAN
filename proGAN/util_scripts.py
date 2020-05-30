@@ -16,6 +16,7 @@ import tensorflow.compat.v1 as tf # https://www.tensorflow.org/guide/migrate
 tf.disable_v2_behavior()
 import scipy.ndimage
 import scipy.misc
+import imageio
 
 import config
 import misc
@@ -61,10 +62,24 @@ def generate_fake_images_labels(run_id, snapshot=None, grid_size=[1,1], num_pngs
     for png_idx in range(num_pngs):
         print('Generating png %d / %d...' % (png_idx, num_pngs))
         latents = misc.random_latents(np.prod(grid_size), Gs, random_state=random_state)
-        labels = np.zeros([latents.shape[0], 2], np.float32)
-        labels[:,0] = 1.0
+        labels = np.zeros([latents.shape[0], 40], np.float32)
+        # labels[:,0] = 1. #male
+        # labels[:,1] = 0. #smiling
+        # labels[:,2] = 0. #Attractive
+        # labels[:,3] = 1. #heavy makeup
+        labels[:,2] = 1.
+        labels[:, 8] = 1.
+        labels[:, 18] = 1.
+        labels[:, 24] = 1.
+        labels[:, 31] = 1.
+        labels[:, 33] = 1.
+        labels[:, 39] = 1.
+
         images = Gs.run(latents, labels, minibatch_size=minibatch_size, num_gpus=config.num_gpus, out_mul=127.5, out_add=127.5, out_shrink=image_shrink, out_dtype=np.uint8)
         misc.save_image_grid(images, os.path.join(result_subdir, '%s%06d.png' % (png_prefix, png_idx)), [0,255], grid_size)
+
+        # grid_fakes = Gs.run(grid_latents, grid_labels, minibatch_size=sched.minibatch // config.num_gpus)
+        # misc.save_image_grid(grid_fakes, os.path.join(result_subdir, 'fakes%06d.png' % (cur_nimg // 1000)), drange=drange_net, grid_size=grid_size)
     open(os.path.join(result_subdir, '_done.txt'), 'wt').close()
 
 
@@ -143,13 +158,14 @@ def generate_training_video(run_id, duration_sec=20.0, time_warp=1.5, mp4=None, 
         if png_cache[0] == png:
             img = png_cache[1]
         else:
-            img = scipy.misc.imread(png)
+            #img = scipy.misc.imread(png)
+            img = imageio.imread(png)
             while img.shape[1] > 1920 or img.shape[0] > 1080:
                 img = img.astype(np.float32).reshape(img.shape[0]//2, 2, img.shape[1]//2, 2, -1).mean(axis=(1,3))
             png_cache[:] = [png, img]
-        img = misc.draw_text_label(img, 'lod %.2f' % lod, 16, img.shape[0]-4, alignx=0.0, aligny=1.0)
-        img = misc.draw_text_label(img, misc.format_time(int(np.rint(wallclock))), img.shape[1]//2, img.shape[0]-4, alignx=0.5, aligny=1.0)
-        img = misc.draw_text_label(img, '%.0f kimg' % kimg, img.shape[1]-16, img.shape[0]-4, alignx=1.0, aligny=1.0)
+        # img = misc.draw_text_label(img, 'lod %.2f' % lod, 16, img.shape[0]-4, alignx=0.0, aligny=1.0)
+        # img = misc.draw_text_label(img, misc.format_time(int(np.rint(wallclock))), img.shape[1]//2, img.shape[0]-4, alignx=0.5, aligny=1.0)
+        # img = misc.draw_text_label(img, '%.0f kimg' % kimg, img.shape[1]-16, img.shape[0]-4, alignx=1.0, aligny=1.0)
         return img
 
     # Generate video.
