@@ -277,4 +277,8 @@ def evaluate_metrics(run_id, log, metrics, num_images, real_passes, minibatch_si
         print()
     print()
 
+def evaluate_metrics_multi(run_ids, log, metrics, num_images, real_passes, minibatch_size=None):
+    for run_id in run_ids:
+        evaluate_metrics(run_id, log, metrics, num_images, real_passes, minibatch_size=minibatch_size)
+
 #----------------------------------------------------------------------------

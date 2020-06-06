@@ -91,7 +91,7 @@ class OutputLogger(object):
         self.buffer = ''
 
     def set_log_file(self, filename, mode='wt'):
-        assert self.file is None
+        # assert self.file is None
         self.file = open(filename, mode)
         if self.buffer is not None:
             self.file.write(self.buffer)
@@ -289,7 +289,11 @@ def load_dataset_for_previous_run(run_id, **kwargs): # => dataset_obj, mirror_au
 
     # Load dataset.
     dataset_cfg.update(kwargs)
-    dataset_obj = dataset.load_dataset(data_dir=config.data_dir, **dataset_cfg)
+    run_num = int(run_id[run_id.find("\\")+1:run_id.find("\\")+4])
+    for label_file in config.label_files:
+        if label_file.endswith("."+str(run_num)):
+            break
+    dataset_obj = dataset.load_dataset(data_dir=config.data_dir, label_file=label_file, **dataset_cfg)
     return dataset_obj, mirror_augment
 
 def apply_mirror_augment(minibatch):
