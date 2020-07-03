@@ -51,27 +51,27 @@ We use the CelebA dataset [13] of 200k+ images with already labeled attributes. 
 We experimented training different network architectures with our CelebA dataset. We tried various fully connected, deep convolutional, and other architectures.   Our early attempts were unsuccessful as we experienced mode collapse or we produced images that didn’t look like faces.
 We finally settled on using progressive GANs [8] which offered the best stability in training and variation in results. We were able to train 5 different progressive GANs, each model taking over 22 hours to train. We show the outputs of our GAN with no conditions, as well of some samples from our GAN with 2, 4, and 40 conditions. Figure 4 shows sample generated images from our fully trained progressive GAN without any conditions.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_4.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_4.png?raw=true)
 
 Figure 5 shows sample generated images from our fully trained progressive GAN with two conditions -male, not smiling.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_5.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_5.png?raw=true)
 
 Figure 6 shows sample generated images from our fully trained progressive GAN with two conditions -female, smiling.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_6.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_6.png?raw=true)
 
 Figure 7 shows sample generated images from our fully trained progressive GAN with four conditions -female, smiling, attractive, no makeup.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_7.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_7.png?raw=true)
 
 Figure 8 shows sample generated images from our fully trained  progressive GAN with four conditions -male, not smiling, not attractive, makeup.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_8.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_8.png?raw=true)
 
 Figure 9 shows sample generated images from our fully trained progressive GAN with forty conditions.
 
-![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_9.png?raw=true)\
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_9.png?raw=true)
 
 We see that our conditional models perform well in following the input conditions. We can see that our forty condition model produces lower quality images and has less variability given the breadth of the constraints.
 
@@ -84,11 +84,13 @@ We sample the Sliced Wasserstein Distance at four differentresolutions similar t
 
 ### 6.3. Inception Score
 The Inception Score is an early quantitative metric for evaluating the quality of generative models. It utilizes the Inception v3 model to classify fake generated images, and the output of the classification represents the conditional probability for each image p(y|x). Then the marginal probabilities p(y) are calculated by  averaging the conditional probabilities in a group of images. The conditional probabilities p(y|x) should have low entropy and the marginalprobabilitiesp(y)should have high entropy which reflects high quality images of a class with good variation. These requirements are formulated using the KL divergence [17].
-KL(p(y|x)‖p(y)) =p(y|x)∗(log(p(y|x))−log(p(y)))
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_5.png?raw=true)\
 The exponent of the KL divergence is then applied to obtain the final Inception Score. The Inception Score varies from 1 to 1000 the total number of classes output by the Inception v3 model. The higher the Inception Scores the higher quality the output generated images.
 ### 6.4. Frechet Inception Distance
 The Frechet Inception Distance allows us to compare how fake generated images compare with real images. Calculating the FID involves passing images into the pre-trained Inception v3 model and using the activations from the pool3 layer. This is the same layer of activations used when calculating the Inception Score. We then calculate the Wasserstein-2 distance between these activations [7]. The Frechet Inception Distance is calculated with the formula
-d2((μ1,σ1),(μ2,σ2)) =‖μ1−μ2‖22+Tr(σ1+σ2−2(σ1σ2)1/2)
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_6.png?raw=true)\
 The lower the Frechet Inception Distance the closer thetwo fake and real distributions and the higher the quality ofthe fake generated images.
 
 ### 6.5. Multi-Scale Structural Similarity
@@ -96,7 +98,11 @@ Multi-Scale Structural Similarity is a variation of structural similarity which 
 MS-SSIM is bounded between -1 and 1 with 1 representing the most similar (identical) images. We evaluate our output images by comparing pairs of generated images using MS-SSIM.
 
 ## 7. Results
-Figure 10 shows the Sliced Wasserstein Distance calcu-lated on our five GANs with varying number of conditions. It shows that having a low number of conditions has performance roughly in line with our network with no conditions. We do see a difference in quality with our forty condition GAN which has a significantly higher SWD at all resolutions. Looking at Inception Score in Figure 11, we see that our zero, one, two, and four condition models perform similarly, and our 40 condition model scores much worse. Figure 12 shows the Frechet Inception Distance across varying number of conditions. It shows relatively similar performance regardless of having more conditions. Finally, we calculate Multi-Scale Structural Similarity between pairs of generated images in each of our models toassess variation in our output images. We see that variationdecreases as training progresses. In our final trained models, our no-condition model has highest variation as measured by MS-SSIM  followed by our 1- and 40-conditionmodels then the 2- and 4-condition models.
+Figure 10 shows the Sliced Wasserstein Distance calculated on our five GANs with varying number of conditions. It shows that having a low number of conditions has performance roughly in line with our network with no conditions. We do see a difference in quality with our forty condition GAN which has a significantly higher SWD at all resolutions. Looking at Inception Score in Figure 11, we see that our zero, one, two, and four condition models perform similarly, and our 40 condition model scores much worse. Figure 12 shows the Frechet Inception Distance across varying number of conditions. It shows relatively similar performance regardless of having more conditions. Finally, we calculate Multi-Scale Structural Similarity between pairs of generated images in each of our models toassess variation in our output images. We see that variationdecreases as training progresses. In our final trained models, our no-condition model has highest variation as measured by MS-SSIM  followed by our 1- and 40-conditionmodels then the 2- and 4-condition models.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_10.png?raw=true)
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_11.png?raw=true)
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_12.png?raw=true)
 
 ## 8. Conclusion
 Overall, all of our conditional GANs appear to work well and generate samples that correspond to the input conditions. Additionally, we see that even images which were not common in the training set (eg. males with makeup) were properly generated by our generator. Analyzing the quantitative metrics, we saw that our forty condition model performed worse in terms of Sliced Wasserstein Distance and Inception Score. 
