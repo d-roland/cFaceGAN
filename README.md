@@ -26,28 +26,52 @@ We utilize the network architecture described in [8]. This convolutional archite
 The training starts at a level of detail which corresponds to 4×4 images. For the generator, only the firstblock of two convolutional layers are used. Then there is a final Conv1×1layer which outputs a 4×4 image. As the level of detail changes by one, the output image’s height and width grows by a factor of two, and for the generator network, we add an upsample and two convolutional layers prior to the final Conv1×1. For the discriminator network, when training with 4×4 images, we only have the final block shown in Figure 2. We have a Conv 1×1 layer right before the Minibatch Standard Deviation layer. We refer the reader to the original paper [8] for details on the Minibatch Standard Deviation layer. As the level of detail changes by one, the dimensions of the input image to the discriminator doubles, and we add the next block of two Conv 3×3 layers and Downsample layers. During the entire training, the level of detail progressively changes a total of five times where the images increase from 4×4 to 128×128 pixels. A total of over 6 million images are fed through the training process.
 ### 4.2. Auxiliary classifer approach to conditioning
 Our  baseline  is  a  GAN  which  does  not  take  any  conditions for c_in. We increase the number of conditions to compare against our baseline. The approach we  take to condition our GAN is using the auxiliary classifier approach as described in [14]. The generator network takes in a condition variable c_in as mentioned earlier. The difference between the auxiliary classifier approach versus vanilla conditioning is that the condition vector c_in is not an input to the discriminator. Instead, the discriminator is tasked with labeling the input image with a correct c. In addition to the traditional loss functions minimized for the generator and discriminator, the auxiliary classifer conditioning adds a label penalty to both of their respective loss functions. We use the binary cross entropy loss function for each component of c_in where y_i is the true label and ŷ_i is the sigmoid output from the discriminator for label component i.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_1.png?raw=true)\
 In this way, the training of the GAN results in a generator that produces images adhering to the input conditions, and the discriminator not only determines if an image is real but also labels an input image with the correct attributes.
 
 ### 4.3. Wasserstein loss function 
 For the loss functions we use the Wasserstein loss function [1] which allows for greater stability during training by providing a more stable gradient. The generator loss is:
-LWGANG=−Eimageout∼pg[D(imageout)]
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_2.png?raw=true)\
 The discriminator, or critic, loss is:
-LWGAND=−Ex∼pd[D(x)]+Eimageout∼pg[D(imageout)]
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_3.png?raw=true)\
 where p_d is the distribution of real images and p_g is the distribution of generated images. Note the Wasserstein loss function does not include any cross entropy calculations and reflects the Wasserstein distance between the two probability distributions p_d and p_g. It is also required that the discriminator function D is a K-Lipshitz function for some K[1]. To achieve this, we also include the gradient penalty below in the discriminator loss function [6].
-penaltygradient=λEˆx∼Pˆx[(‖∇ˆxD(ˆx)‖2−1)2]
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/formula_4.png?raw=true)\
 P_x is a uniform sampling of the linear interpolation between P_d and P_g. For further details on Wasserstein loss function and gradient penalty we refer the reader to the original cited papers.
 
 ## 5. Dataset
 We use the CelebA dataset [13] of 200k+ images with already labeled attributes. These binary attributes are shown in Figure 3. The larger the size the more balanced the attribute in the dataset. The original images are RBG images of size 178 pixels by 218 pixels. We crop the images and only use the center 128 by 128 pixels. Each pixel is stored as an unsigned 8-bit integer, and all images are stored as serialized tf.Example objects in TFRecords. We generate 6 TFRecord files for images at each of the following resolutions: 4×4,8×8,16×16,32×32,64×64,128×128 pixels. We start with 128×128 sized images and downsample the resolution by averaging each 4 pixel cluster. These TFRecord files allow us to readily train our GAN at progressively greater resolutions.
 
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_3.png?raw=true)
+
 ## 6. Experiments
 We experimented training different network architectures with our CelebA dataset. We tried various fully connected, deep convolutional, and other architectures.   Our early attempts were unsuccessful as we experienced mode collapse or we produced images that didn’t look like faces.
 We finally settled on using progressive GANs [8] which offered the best stability in training and variation in results. We were able to train 5 different progressive GANs, each model taking over 22 hours to train. We show the outputs of our GAN with no conditions, as well of some samples from our GAN with 2, 4, and 40 conditions. Figure 4 shows sample generated images from our fully trained progressive GAN without any conditions.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_4.png?raw=true)\
+
 Figure 5 shows sample generated images from our fully trained progressive GAN with two conditions -male, not smiling.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_5.png?raw=true)\
+
 Figure 6 shows sample generated images from our fully trained progressive GAN with two conditions -female, smiling.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_6.png?raw=true)\
+
 Figure 7 shows sample generated images from our fully trained progressive GAN with four conditions -female, smiling, attractive, no makeup.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_7.png?raw=true)\
+
 Figure 8 shows sample generated images from our fully trained  progressive GAN with four conditions -male, not smiling, not attractive, makeup.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_8.png?raw=true)\
+
 Figure 9 shows sample generated images from our fully trained progressive GAN with forty conditions.
+
+![alt text](https://github.com/d-roland/cFaceGAN/blob/master/images/image_9.png?raw=true)\
 
 We see that our conditional models perform well in following the input conditions. We can see that our forty condition model produces lower quality images and has less variability given the breadth of the constraints.
 
