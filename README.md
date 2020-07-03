@@ -1,3 +1,7 @@
-# Introduction
+## Abstract
+
+We compare conditional generative adversarial networks with different numbers of conditions. We train progressively larger GANs in order to improve stability and variation and utilize the auxiliary classifier approach to conditioning. Qualitatively, our conditional GANs performed well regardless of the number of conditions and generated images accordingly. Quantitatively, our forty condition GAN performed worse than models with fewer conditions as measured by Sliced Wasserstein Distance and Inception Score.
+
+## Introduction
 
 Conditional generative adversarial networks which allow a trained generator to output samples that comply with certain conditions have been proposed since the advent of generative adversarial networks [5]. We examine the effect of changing the number of conditions on the training of these conditional GANs as well as the accuracy of output samples in terms of following their conditions. The number of conditions can theoretically affect the accuracy of output samples by limiting the number of samples which match a specific combination of conditions during training. We examine how number of samples changes as number of conditions increases and how that affects our GAN training and generator performance. We train our conditional GAN using labeled facial images so that the trained generator is able to produce face images corresponding to difference facial characteristics. The ability to generate images of a face given certain parameters has applications in avatar generation and gaming. For our method, we plan to train a conditional deep convolutional GAN (DCGAN) as implemented in [16]. To improve output image quality we utilize progressively deeper GANs as in [8].
