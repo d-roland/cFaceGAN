@@ -1,3 +1,5 @@
+# Conditional Face GAN
+
 ## Abstract
 
 We compare conditional generative adversarial networks (cGANs) with different numbers of conditions. We train progressively larger GANs in order to improve stability and variation and utilize the auxiliary classifier approach to conditioning. Qualitatively, our conditional GANs performed well regardless of the number of conditions and generated images accordingly. Quantitatively, our forty conditions GAN performed worse than models with fewer conditions as measured by Sliced Wasserstein Distance and Inception Score.
@@ -62,7 +64,7 @@ d2((μ1,σ1),(μ2,σ2)) =‖μ1−μ2‖22+Tr(σ1+σ2−2(σ1σ2)1/2)
 The lower the Frechet Inception Distance the closer thetwo fake and real distributions and the higher the quality ofthe fake generated images.
 
 ### 6.5. Multi-Scale Structural Similarity
-Multi-Scale Structural Similarity is a variation of structural similarity which compares high level attributes of images to assess their quality. Structural similarity is calculated by comparing the mean, variance, and covariance of two non-negative inputs. The formula for luminance, contrast, and structure as mentioned in [19].
+Multi-Scale Structural Similarity is a variation of structural similarity which compares high level attributes of images to assess their quality. Structural similarity is calculated by comparing the mean, variance, and covariance of two non-negative inputs. The formula for luminance, contrast, and structure as mentioned in [19].\
 MS-SSIM is bounded between -1 and 1 with 1 representing the most similar (identical) images. We evaluate our output images by comparing pairs of generated images using MS-SSIM.
 
 ## 7. Results
@@ -73,24 +75,24 @@ Overall, all of our conditional GANs appear to work well and generate samples th
 For future work, we can explore how different condition types affect GAN performance. We only used binary conditions in this project. We would like to investigate how numerical and multi-class conditions affect GAN performance.
 
 ## References
-[1]  Martin   Arjovsky,   Soumith   Chintala,   and   Leon   Bottou. Wasserstein gan, 2017.
-[2]  Y.  Choi,  M.  Choi,  M.  Kim,  J.  Ha,  S.  Kim,  and  J.  Choo. Stargan:  Unified generative adversarial networks for multi-domain  image-to-image  translation. In 2018  IEEE/CVFConference  on  Computer  Vision  and  Pattern  Recognition,pages 8789–8797, 2018.
-[3]  Terrance  DeVries, Adriana  Romero, Luis Pineda, GrahamTaylor, and Michal Drozdzal. On the evaluation of conditional gans, 07 2019.
-[4]  Yixiao Ge, Zhuowan Li, Haiyu Zhao, Guojun Yin, Shuai Yi,Xiaogang Wang, and Hongsheng Li. Fd-gan:  Pose-guided feature distilling gan for robust person re-identification.  InNeurIPS, 2018.
-[5]  Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, BingXu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. Generative adversarial networks, 2014.
-[6]  Ishaan Gulrajani, Faruk Ahmed,  Martin Arjovsky,  VincentDumoulin,  and  Aaron  Courville.Improved  training  ofwasserstein gans, 2017.
-[7]  Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter.  Gans trained by a two time-scale update rule converge to a local nash equilib-rium, 2017.
-[8]  Tero Karras, Timo Aila, Samuli Laine, and Jaakko Lehtinen.Progressive growing of gans for improved quality, stability,and variation, 2017.
-[9]  Soheil  Kolouri,  Kimia  Nadjahi,  Umut  Simsekli,  RolandBadeau, and Gustavo K. Rohde.  Generalized sliced wasser-stein distances, 2019.
-[10]  C. Ledig, L. Theis, F. Husz ́ar, J. Caballero, A. Cunningham,A. Acosta, A. Aitken, A. Tejani, J. Totz, Z. Wang, and W.Shi.   Photo-realistic  single  image  super-resolution  using  agenerative adversarial network.   In2017 IEEE Conferenceon Computer Vision and Pattern Recognition (CVPR), pages105–114, 2017.
-[11]  Muyang Li, Ji Lin, Yaoyao Ding, Zhijian Liu, Jun-Yan Zhu,and Song Han.  Gan compression: Efficient architectures forinteractive conditional gans, 03 2020.
-[12]  Yunfan Liu, Qi Li, Zhenjun Sun, and Tieniu Tan. A3gan: Anattribute-aware attentive generative adversarial network forface aging. 11 2019.
-[13]  Ziwei  Liu,  Ping  Luo,  Xiaogang  Wang,  and  Xiaoou  Tang.Deep learning face attributes in the wild.  In Proceedings ofInternational Conference on Computer Vision (ICCV), De-cember 2015.
-[14]  Augustus  Odena,  Christopher  Olah,  and  Jonathon  Shlens.Conditional  image  synthesis  with  auxiliary  classifier  gans,2016.
-[15]  Taesung Park, Ming-Yu Liu, Ting-Chun Wang, and Jun-YanZhu. Gaugan: semantic image synthesis with spatially adap-tive normalization. pages 1–1, 07 2019.
-[16]  Alec Radford, Luke Metz, and Soumith Chintala.  Unsuper-vised representation learning with deep convolutional gener-ative adversarial networks, 2015.
-[17]  Tim  Salimans,  Ian  Goodfellow,  Wojciech  Zaremba,  VickiCheung, Alec Radford, and Xi Chen.  Improved techniquesfor training gans, 2016.
-[18]  Yujun Shen, Ping Luo, Junjie Yan, Xiaogang Wang, and Xi-aoou Tang.  Faceid-gan:  Learning a symmetry three-playergan for identity-preserving face synthesis.   pages 821–830,06 2018.
-[19]  Z. Wang, E. P. Simoncelli, and A. C. Bovik. Multiscale struc-tural similarity for image quality assessment.  InThe Thrity-Seventh Asilomar Conference on Signals, Systems Comput-ers, 2003, volume 2, pages 1398–1402 Vol.2, 2003.
-[20]  Zili Yi, Hao Zhang, Ping Tan, and Minglun Gong.  Dualgan:Unsupervised dual learning for image-to-image translation.pages 2868–2876, 10 2017.
+[1]  Martin   Arjovsky,   Soumith   Chintala,   and   Leon   Bottou. Wasserstein gan, 2017.\
+[2]  Y.  Choi,  M.  Choi,  M.  Kim,  J.  Ha,  S.  Kim,  and  J.  Choo. Stargan:  Unified generative adversarial networks for multi-domain  image-to-image  translation. In 2018  IEEE/CVFConference  on  Computer  Vision  and  Pattern  Recognition,pages 8789–8797, 2018.\
+[3]  Terrance  DeVries, Adriana  Romero, Luis Pineda, GrahamTaylor, and Michal Drozdzal. On the evaluation of conditional gans, 07 2019.\
+[4]  Yixiao Ge, Zhuowan Li, Haiyu Zhao, Guojun Yin, Shuai Yi,Xiaogang Wang, and Hongsheng Li. Fd-gan:  Pose-guided feature distilling gan for robust person re-identification.  InNeurIPS, 2018.\
+[5]  Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, BingXu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. Generative adversarial networks, 2014.\
+[6]  Ishaan Gulrajani, Faruk Ahmed,  Martin Arjovsky,  VincentDumoulin,  and  Aaron  Courville.Improved  training  ofwasserstein gans, 2017.\
+[7]  Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter.  Gans trained by a two time-scale update rule converge to a local nash equilib-rium, 2017.\
+[8]  Tero Karras, Timo Aila, Samuli Laine, and Jaakko Lehtinen.Progressive growing of gans for improved quality, stability,and variation, 2017.\
+[9]  Soheil  Kolouri,  Kimia  Nadjahi,  Umut  Simsekli,  RolandBadeau, and Gustavo K. Rohde.  Generalized sliced wasser-stein distances, 2019.\
+[10]  C. Ledig, L. Theis, F. Husz ́ar, J. Caballero, A. Cunningham,A. Acosta, A. Aitken, A. Tejani, J. Totz, Z. Wang, and W.Shi.   Photo-realistic  single  image  super-resolution  using  agenerative adversarial network.   In2017 IEEE Conferenceon Computer Vision and Pattern Recognition (CVPR), pages105–114, 2017.\
+[11]  Muyang Li, Ji Lin, Yaoyao Ding, Zhijian Liu, Jun-Yan Zhu,and Song Han.  Gan compression: Efficient architectures forinteractive conditional gans, 03 2020.\
+[12]  Yunfan Liu, Qi Li, Zhenjun Sun, and Tieniu Tan. A3gan: Anattribute-aware attentive generative adversarial network forface aging. 11 2019.\
+[13]  Ziwei  Liu,  Ping  Luo,  Xiaogang  Wang,  and  Xiaoou  Tang.Deep learning face attributes in the wild.  In Proceedings ofInternational Conference on Computer Vision (ICCV), De-cember 2015.\
+[14]  Augustus  Odena,  Christopher  Olah,  and  Jonathon  Shlens.Conditional  image  synthesis  with  auxiliary  classifier  gans,2016.\
+[15]  Taesung Park, Ming-Yu Liu, Ting-Chun Wang, and Jun-YanZhu. Gaugan: semantic image synthesis with spatially adap-tive normalization. pages 1–1, 07 2019.\
+[16]  Alec Radford, Luke Metz, and Soumith Chintala.  Unsuper-vised representation learning with deep convolutional gener-ative adversarial networks, 2015.\
+[17]  Tim  Salimans,  Ian  Goodfellow,  Wojciech  Zaremba,  VickiCheung, Alec Radford, and Xi Chen.  Improved techniquesfor training gans, 2016.\
+[18]  Yujun Shen, Ping Luo, Junjie Yan, Xiaogang Wang, and Xi-aoou Tang.  Faceid-gan:  Learning a symmetry three-playergan for identity-preserving face synthesis.   pages 821–830,06 2018.\
+[19]  Z. Wang, E. P. Simoncelli, and A. C. Bovik. Multiscale struc-tural similarity for image quality assessment.  InThe Thrity-Seventh Asilomar Conference on Signals, Systems Comput-ers, 2003, volume 2, pages 1398–1402 Vol.2, 2003.\
+[20]  Zili Yi, Hao Zhang, Ping Tan, and Minglun Gong.  Dualgan:Unsupervised dual learning for image-to-image translation.pages 2868–2876, 10 2017.\
 [21]  Han Zhang, Tao Xu, Hongsheng Li, Shaoting Zhang, Xiao-gang Wang, Xiaolei Huang, and Dimitris Metaxas. Stackgan:Text to photo-realistic image synthesis with stacked genera-tive adversarial networks, 2016.
