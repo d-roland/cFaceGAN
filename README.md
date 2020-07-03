@@ -1,6 +1,6 @@
 ## Abstract
 
-We compare conditional generative adversarial networks with different numbers of conditions. We train progressively larger GANs in order to improve stability and variation and utilize the auxiliary classifier approach to conditioning. Qualitatively, our conditional GANs performed well regardless of the number of conditions and generated images accordingly. Quantitatively, our forty condition GAN performed worse than models with fewer conditions as measured by Sliced Wasserstein Distance and Inception Score.
+We compare conditional generative adversarial networks (cGANs) with different numbers of conditions. We train progressively larger GANs in order to improve stability and variation and utilize the auxiliary classifier approach to conditioning. Qualitatively, our conditional GANs performed well regardless of the number of conditions and generated images accordingly. Quantitatively, our forty condition GAN performed worse than models with fewer conditions as measured by Sliced Wasserstein Distance and Inception Score.
 
 ## Introduction
 
